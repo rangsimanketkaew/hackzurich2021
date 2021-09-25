@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import random
 import sys
 
 from PIL import Image
@@ -27,7 +27,8 @@ from pyzbar.pyzbar import decode
 ## JSON API
 import urllib.request, json 
 
-from garden import Garden, Icon, Toys
+from garden import Garden#, Icon, Toys
+from inventory import Inventory
 
 
 class Window(tk.Toplevel):
@@ -49,6 +50,8 @@ class Mygarden:
         self.total_co2 = 0
         self.score = 0
         self.num_trees = 0
+        self.slotsnx = 5
+        self.slotsny = 4
 
         self.master = tk.Tk()
         self.start_master()
@@ -110,32 +113,69 @@ class Mygarden:
         # Frame 1 #
         ###########
 
-        self.frame1 = tk.LabelFrame(self.master, text=f"CO2 saved: {self.total_co2} kg")
+        self.frame1 = tk.Frame(self.master)
         self.frame1.grid(padx=5, pady=5, ipadx=2, ipady=2, sticky=tk.N, row=0, column=0)
+        self.co2text = tk.Label(self.frame1, text=f"CO2 saved: {self.total_co2} kg")
+        self.co2text.grid(padx="10", pady="5", row=0, column=0)
+        self.btn4 = ttk.Button(self.frame1, text="Advance", command=self.update)
+        self.btn4.config(width=14)
+        self.btn4.grid(padx="10", pady="5", row=0, column=1)
 
         #---------
         self.btn1 = ttk.Button(self.frame1, text="Scan", command=self.scanner)
         self.btn1.config(width=14)
-        self.btn1.grid(padx="10", pady="5", row=0, column=0)
+        self.btn1.grid(padx="10", pady="5", row=1, column=0)
         #---------
         self.btn2 = ttk.Button(self.frame1, text="Print codes", command=self.print_codes)
         self.btn2.config(width=14)
-        self.btn2.grid(padx="10", pady="5", row=1, column=0)
+        self.btn2.grid(padx="10", pady="5", row=2, column=0)
         #---------
         self.btn3 = ttk.Button(self.frame1, text="Calculate score", command=self.calc_score)
         self.btn3.config(width=14)
-        self.btn3.grid(padx="10", pady="5", row=0, column=1)
+        self.btn3.grid(padx="10", pady="5", row=1, column=1)
         #---------
-        self.btn4 = ttk.Button(self.frame1, text="Inventory", command=self.test_command)
+        self.btn4 = ttk.Button(self.frame1, text="Inventory", command=self.open_inventory)
         self.btn4.config(width=14)
-        self.btn4.grid(padx="10", pady="5", row=1, column=1)
+        self.btn4.grid(padx="10", pady="5", row=2, column=1)
+
+
+
+        # self.btn3 = ttk.Button(self.frame1, text="Calculate score", command=self.calc_score)
+        # self.btn3.config(width=14)
+        # self.btn3.grid(padx="10", pady="5", row=0, column=3)
+
+        ################
+        # garden frame #
+        ################
+
+        self.garden = Garden()
+        self.frame = tk.LabelFrame(self.master, text="MyGarden")
+        self.frame.grid(padx=5, pady=10, row=2, column=0, sticky=tk.N)
+        self.garden.createwidget(self.frame)
+
+        #############
+        # inventory #
+        #############
+        self.inventory = Inventory(self.garden)
+        self.inventory.additem("debug")
+        self.inventory.additem("apple")
+        self.inventory.additem("applesapling")
+        self.inventory.additem("appletree")
+        self.inventory.additem("beehive")
+        self.inventory.additem("chickens")
+        self.inventory.additem("cows")
+        self.inventory.additem("fertilizer")
+        self.inventory.additem("oaksapling")
+        self.inventory.additem("oaktree")
+        self.inventory.additem("pigs")
+
 
         ###########
         # Frame 2 #
         ###########
 
         frame2 = tk.LabelFrame(self.master, text="Progress")
-        frame2.grid(padx=5, pady=10, row=2, column=0, sticky=tk.N)
+        frame2.grid(padx=5, pady=10, row=3, column=0, sticky=tk.N)
 
         self.box_product = tkscrolled.ScrolledText(frame2)
         self.box_product.configure(height="10", width="30", wrap="word", undo="True")
@@ -237,6 +277,18 @@ class Mygarden:
 
     # def show_barcode(self):
     #     self.show_text_product(print(self.barcodes))
+
+    def open_inventory(self):
+        self.inventory.createwidget(self.master)
+
+    def open_garden(self):
+        self.garden.createwidget(self.master)
+
+    def update(self):
+        self.garden.update()
+        self.total_co2 += random.randint(10,20)
+        self.co2text = tk.Label(self.frame1, text=f"CO2 saved: {self.total_co2} kg")
+        self.co2text.grid(padx="10", pady="5", row=0, column=0)
 
     def print_codes(self):
         for barcode in self.barcodes:

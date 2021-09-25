@@ -32,6 +32,7 @@ import urllib.request, json
 ## Import garden geenerator
 from garden import Garden#, Icon, Toys
 from table_product import Table
+from inventory import Inventory
 
 ## Import JSON things
 from json_reader import check_item
@@ -202,8 +203,7 @@ class Mygarden:
         ###########
 
         frame2 = tk.LabelFrame(self.master, text="Progress")
-        frame2.grid(padx=5, pady=10, row=3, column=0, sticky=tk.N)
-        frame2.grid(padx=15, pady=15, row=2, column=0, sticky=tk.N, columnspan=2)
+        frame2.grid(padx=15, pady=15, row=3, column=0, sticky=tk.N, columnspan=2)
         # box 1 showing barcode info
         self.box_product = tkscrolled.ScrolledText(frame2)
         self.box_product.configure(height="15", width="42", wrap="word", undo="True")

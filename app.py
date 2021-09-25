@@ -144,24 +144,22 @@ class Mygarden:
         self.frame1.grid(padx=5, pady=5, ipadx=2, ipady=2, sticky=tk.N, row=0, column=0)
         self.co2text = tk.Label(self.frame1, text=f"CO2 saved: {self.total_co2} kg")
         self.co2text.grid(padx="10", pady="5", row=0, column=0)
-        self.btn4 = ttk.Button(self.frame1, text="Advance", command=self.update)
-        self.btn4.config(width=14)
-        self.btn4.grid(padx="10", pady="5", row=0, column=1)
 
         #---------
         self.btn1 = ttk.Button(self.frame1, text="Scan", command=self.scanner)
         self.btn1.config(width=14)
         self.btn1.grid(padx="10", pady="5", row=1, column=0)
         #---------
-        self.btn2 = ttk.Button(self.frame1, text="Print codes", command=self.print_codes)
+        self.btn2 = ttk.Button(self.frame1, text="Calculate score", 
+                                command=lambda: [self.calc_score(), self.print_codes()])
         self.btn2.config(width=14)
         self.btn2.grid(padx="10", pady="5", row=2, column=0)
         #---------
-        self.btn3 = ttk.Button(self.frame1, text="Calculate score", command=self.calc_score)
+        self.btn3 = ttk.Button(self.frame1, text="Inventory", command=self.open_inventory)
         self.btn3.config(width=14)
         self.btn3.grid(padx="10", pady="5", row=1, column=1)
         #---------
-        self.btn4 = ttk.Button(self.frame1, text="Inventory", command=self.open_inventory)
+        self.btn4 = ttk.Button(self.frame1, text="Advance", command=self.update)
         self.btn4.config(width=14)
         self.btn4.grid(padx="10", pady="5", row=2, column=1)
 
@@ -217,32 +215,32 @@ class Mygarden:
         ###########
         # Frame 3 #
         ###########
-        frame3 = tk.Frame(self.master)
-        frame3.grid(column=0, columnspan=3, sticky=tk.N)
+        # frame3 = tk.Frame(self.master)
+        # frame3.grid(column=0, columnspan=3, sticky=tk.N)
 
-        self.loadedimage_1 = self.loadrelimages('assets/apple.jpg')
-        self.canvas_1 = tk.Label(frame3, width=200, height=200, image=self.loadedimage_1)
-        # self.canvas_1.create_image(50, 50, anchor="center", image=self.loadedimage_1)
-        self.canvas_1.grid(row=0, column=0)
+        # self.loadedimage_1 = self.loadrelimages('assets/apple.jpg')
+        # self.canvas_1 = tk.Label(frame3, width=200, height=200, image=self.loadedimage_1)
+        # # self.canvas_1.create_image(50, 50, anchor="center", image=self.loadedimage_1)
+        # self.canvas_1.grid(row=0, column=0)
 
-        self.loadedimage_2 = self.loadrelimages('assets/pigs.jpg')
-        self.canvas_2 = tk.Label(frame3, width=200, height=200, image=self.loadedimage_2)
-        # self.canvas_1.create_image(50, 50, anchor="center", image=self.loadedimage_1)
-        self.canvas_2.grid(row=0, column=1)
+        # self.loadedimage_2 = self.loadrelimages('assets/pigs.jpg')
+        # self.canvas_2 = tk.Label(frame3, width=200, height=200, image=self.loadedimage_2)
+        # # self.canvas_1.create_image(50, 50, anchor="center", image=self.loadedimage_1)
+        # self.canvas_2.grid(row=0, column=1)
 
     ################
     # Update image #
     ################
 
-    def change_product_img(self, new_img):
-        loadedimage = self.loadrelimages(new_img)
-        self.canvas_1.configure(image=loadedimage)
-        self.canvas_1.image = loadedimage
+    # def change_product_img(self, new_img):
+    #     loadedimage = self.loadrelimages(new_img)
+    #     self.canvas_1.configure(image=loadedimage)
+    #     self.canvas_1.image = loadedimage
 
-    def change_tree_img(self, new_img):
-        loadedimage = self.loadrelimages(new_img)
-        self.canvas_2.configure(image=loadedimage)
-        self.canvas_2.image = loadedimage
+    # def change_tree_img(self, new_img):
+    #     loadedimage = self.loadrelimages(new_img)
+    #     self.canvas_2.configure(image=loadedimage)
+    #     self.canvas_2.image = loadedimage
 
     ################
     # Update table #
@@ -265,6 +263,9 @@ class Mygarden:
     ###################
     # Barcode scanner #
     ###################
+
+    def info_stop_scanner(self):
+        self.show_text_product("Press \'q\' to close the scanner")
 
     def decoder(self, image):
         gray_img = cv2.cvtColor(image,0)
@@ -327,13 +328,6 @@ class Mygarden:
         self.co2text = tk.Label(self.frame1, text=f"CO2 saved: {self.total_co2} kg")
         self.co2text.grid(padx="10", pady="5", row=0, column=0)
 
-    def print_codes(self):
-        # Remove None
-        self.barcodes = list(filter(None, self.barcodes))
-        for barcode in self.barcodes:
-            items, score = check_item.check_json(str(barcode), data_file)
-            self.show_text_product("Barcode: " + str(barcode))
-
     ##########################
     # Calculate score        #
     ##########################
@@ -366,11 +360,11 @@ class Mygarden:
         my_canvas.create_window((0, 0), window=frame, anchor="nw")
 
         ##### header #####
-        self.head1 = tk.Label(frame, text="Product").grid(row=0, column=0)
-        self.head2 = tk.Label(frame, text="CO2").grid(row=0, column=1)
-        self.head3 = tk.Label(frame, text="Animal welfare").grid(row=0, column=2)
-        self.head4 = tk.Label(frame, text="Feature").grid(row=0, column=3)
-        self.head5 = tk.Label(frame, text="Env Score").grid(row=0, column=4)
+        self.head1 = tk.Label(frame, text="Product", font=('Helvetica', 18, 'bold')).grid(row=0, column=0)
+        self.head2 = tk.Label(frame, text="CO2", font=('Helvetica', 18, 'bold')).grid(row=0, column=1)
+        self.head3 = tk.Label(frame, text="Animal welfare", font=('Helvetica', 18, 'bold')).grid(row=0, column=2)
+        self.head4 = tk.Label(frame, text="Feature", font=('Helvetica', 18, 'bold')).grid(row=0, column=3)
+        self.head5 = tk.Label(frame, text="Env Score", font=('Helvetica', 18, 'bold')).grid(row=0, column=4)
 
         ##################
 
@@ -407,18 +401,25 @@ class Mygarden:
             self.tab5.grid(row=i+1, column=4)
 
     def calc_score(self):
+        # Remove None
+        self.barcodes = list(filter(None, self.barcodes))
+        for barcode in self.barcodes:
+            items, score = check_item.check_json(str(barcode), data_file)
+            self.show_text_product("Barcode: " + str(barcode))
+
         headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
         chaper_url = "https://tools.learningcontainer.com/sample-json-file.json"
         req = urllib.request.Request(url=chaper_url, headers=headers)
         data = urllib.request.urlopen(req).read()
         data = json.loads(data.decode())
-        print(data)
-        print(self.barcodes)
         items, score = check_item.check_json(str(self.barcodes[0]), data_file)
         # print score to text box
         self.show_text_product("My Score: " + str(score))
-        self.change_product_img("assets/cows.jpg")
+        # self.change_product_img("assets/cows.jpg")
         self.insert_table(items)
+
+        # convert it back to set
+        self.barcodes = set(self.barcodes)
 
     ##########
     # Garden #
@@ -472,6 +473,7 @@ class Mygarden:
         self.show_text_product(f"Welcome to MyGarden version 0.1")
         self.show_text_product(f"Developed in HackZurich 2021")
         self.show_text_product(f"For the benefit of mankind")
+        self.show_text_product(f"===============================\n")
 
     def start_app(self):
         """Start application

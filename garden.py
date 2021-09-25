@@ -5,7 +5,6 @@ import tkinter as tk
 from item import Item
 
 class Garden:
-
     def __init__(self):
         self.itemlist = []
         self.bufflist = []

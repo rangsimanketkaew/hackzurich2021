@@ -41,8 +41,10 @@ class Garden:
 
     def update(self):
         # advance time
+        saved_co2 = 0
         for item in self.itemlist:
-            item.update()
+            saved_co2 += item.update()
+        return saved_co2
 
 if __name__ == "__main__":
     root = tk.Tk()

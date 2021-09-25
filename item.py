@@ -235,6 +235,7 @@ class Item:
         if self.growth == self.growsat:
             self.garden.removeitem(self.itemid)
             self.garden.additem(self.growsto)
+        return self.co2consumption
 
     def addtowidget(self, root):
         widget = tk.Label(root, width=200, height=200, image=self.picture)

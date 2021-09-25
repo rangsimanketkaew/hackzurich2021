@@ -336,8 +336,7 @@ class Mygarden:
         self.garden.createwidget(self.master)
 
     def update(self):
-        self.garden.update()
-        self.total_co2 += random.randint(10,20)
+        self.total_co2 += self.garden.update()
         self.co2text = tk.Label(self.frame1, text=f"CO2 saved: {self.total_co2} kg")
         self.co2text.grid(padx="10", pady="5", row=0, column=0)
 

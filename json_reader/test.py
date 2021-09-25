@@ -1,6 +1,8 @@
 import sys
 from check_item import check_json 
 
+from pprint import pprint
+
 def main():
 
     code = "106506500000104403200000220622085000" 
@@ -9,7 +11,7 @@ def main():
     data_file = 'products.json'
     item_list, scores = check_json(code, data_file)
 
-    print(item_list)
+    pprint(item_list)
     print("-----------------------------------")
     print("Env. scores: %s" % scores)
 

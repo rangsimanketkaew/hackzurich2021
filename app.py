@@ -6,10 +6,11 @@ from PIL import Image
 sys.setrecursionlimit(1500)
 
 import os
+import io
 import tkinter as tk
 import tkinter.scrolledtext as tkscrolled
 
-from tkinter import PhotoImage, filedialog
+from tkinter import Frame, PhotoImage, filedialog
 from tkinter import messagebox
 from tkinter import ttk
 from tkinter.messagebox import showinfo
@@ -27,9 +28,17 @@ from pyzbar.pyzbar import decode
 ## JSON API
 import urllib.request, json 
 
-from garden import Garden#, Icon, Toys
-from inventory import Inventory
 
+## Import garden geenerator
+from garden import Garden#, Icon, Toys
+from table_product import Table
+
+## Import JSON things
+from json_reader import check_item
+
+import cairosvg
+
+data_file = 'json_reader/products.json'
 
 class Window(tk.Toplevel):
     def __init__(self, parent):
@@ -63,14 +72,32 @@ class Mygarden:
     ##########
     # Helper #
     ##########
-    def loadrelimages(self, relativepath):
+    def loadrelimages(self, relativepath, size=(200,200)):
         from PIL import ImageTk, Image
         directory_path = os.path.dirname(__file__)
         file_path = os.path.join(directory_path, relativepath)
         image = Image.open(file_path.replace('\\',"/"))
-        image = image.resize((200, 200), Image.ANTIALIAS)
+        image = image.resize(size, Image.ANTIALIAS)
         img = ImageTk.PhotoImage(image)  
         return img
+
+    def loadimgurl(self, imgurl):
+        raw_data = urllib.request.urlopen(imgurl).read()
+        im = Image.open(io.BytesIO(raw_data))
+        image = ImageTk.PhotoImage(im)
+        return image
+
+    def loadimgurl_svg(self, imgurl):
+        raw_data = cairosvg.svg2png(url=imgurl)
+        # raw_data = cairosvg.svg2png(bytestring=open(imgurl).read().encode('utf-8'))
+        # raw_data = urllib.request.urlopen(imgurl).read()
+        im = Image.open(io.BytesIO(raw_data))
+        image = ImageTk.PhotoImage(im)
+        return image
+
+    ############
+    # core app #
+    ############
 
     def start_master(self):
         """Start application with UI settings
@@ -176,14 +203,25 @@ class Mygarden:
 
         frame2 = tk.LabelFrame(self.master, text="Progress")
         frame2.grid(padx=5, pady=10, row=3, column=0, sticky=tk.N)
-
+        frame2.grid(padx=15, pady=15, row=2, column=0, sticky=tk.N, columnspan=2)
+        # box 1 showing barcode info
         self.box_product = tkscrolled.ScrolledText(frame2)
-        self.box_product.configure(height="10", width="30", wrap="word", undo="True")
-        self.box_product.grid(row=0, column=0)
+        self.box_product.configure(height="15", width="42", wrap="word", undo="True")
+        self.box_product.grid(row=0, column=0, columnspan=2)
+        
+        # # Create Treeview
+        # self.tree = ttk.Treeview(frame2, column=('A', 'B'), selectmode='none', height=7)
+        # self.tree.grid(row=0, column=1, sticky='nsew')
 
-        self.box_score = tkscrolled.ScrolledText(frame2)
-        self.box_score.configure(height="10", width="30", wrap="word", undo="True")
-        self.box_score.grid(row=0, column=1)
+        # # Setup column heading
+        # # #0, #1, #2 denotes the 0, 1st, 2nd columns
+        # self.tree.heading('#0', text=' Image', anchor='center')
+        # self.tree.heading('#1', text=' A', anchor='center')
+        # self.tree.heading('#2', text=' B', anchor='center')
+        
+        # # Setup column
+        # self.tree.column('A', anchor='center', width=100)
+        # self.tree.column('B', anchor='center', width=100)
 
         ###########
         # Frame 3 #
@@ -191,11 +229,6 @@ class Mygarden:
 
         frame3 = tk.Frame(self.master)
         frame3.grid(column=0, columnspan=3, sticky=tk.N)
-
-        # self.canvas_1 = tk.Canvas(frame3, width=100, height=100)
-        # self.loadedimage_1 = self.loadrelimages('assets/apple.jpg')
-        # self.canvas_1.create_image(50, 50, anchor="center", image=self.loadedimage_1)
-        # self.canvas_1.grid(row=0, column=0)
 
         self.loadedimage_1 = self.loadrelimages('assets/apple.jpg')
         self.canvas_1 = tk.Label(frame3, width=200, height=200, image=self.loadedimage_1)
@@ -220,6 +253,24 @@ class Mygarden:
         loadedimage = self.loadrelimages(new_img)
         self.canvas_2.configure(image=loadedimage)
         self.canvas_2.image = loadedimage
+
+    ################
+    # Update table #
+    ################
+    
+    # def update_table(self, product_data):
+    #     """Pop up product info in the table
+
+    #     product_data: dict
+    #     """
+    #     for barcode in self.barcodes:
+    #         items, score = check_item.check_json(str(barcode), data_file)
+    #     # Insert image to #0 
+    #     self._img = self.loadrelimages("assets/apple.jpg", size=(100,100))
+    #     self.tree.insert('', 'end', 
+    #                         # text="#0's text", 
+    #                         image=self._img, 
+    #                         value=("A's value", "B's value"))
 
     ###################
     # Barcode scanner #
@@ -291,29 +342,97 @@ class Mygarden:
         self.co2text.grid(padx="10", pady="5", row=0, column=0)
 
     def print_codes(self):
+        # Remove None
+        self.barcodes = list(filter(None, self.barcodes))
         for barcode in self.barcodes:
-            self.show_text_product("===> " + str(barcode))
+            items, score = check_item.check_json(str(barcode), data_file)
+            self.show_text_product("Barcode: " + str(barcode))
 
     ##########################
     # Calculate score        #
-    # and call Garden window #
     ##########################
 
+    def insert_table(self, items):
+        master_table = tk.Toplevel()
+        master_table.geometry('1000x500')
+        master_table.title('Toplevel Window')
+        master_frame = Frame(master_table)
+        master_frame.pack(fill=tk.BOTH,expand=1)
+
+        sec = Frame(master_frame)
+        sec.pack(fill=tk.X, side=tk.BOTTOM)
+        # Create A Canvas
+        my_canvas = tk.Canvas(master_table, width=900, height=700)
+        my_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+        # Add A Scrollbars to Canvas
+        x_scrollbar = ttk.Scrollbar(sec, orient=tk.HORIZONTAL, command=my_canvas.xview)
+        x_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+        y_scrollbar = ttk.Scrollbar(master_table, orient=tk.VERTICAL, command=my_canvas.yview)
+        y_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        # Configure the canvas
+        my_canvas.configure(xscrollcommand=x_scrollbar.set)
+        my_canvas.configure(yscrollcommand=y_scrollbar.set)
+        my_canvas.bind("<Configure>", lambda e: my_canvas.config(scrollregion=my_canvas.bbox(tk.ALL)))
+
+        # real frame
+        frame = tk.Frame(my_canvas)
+        # new frame window in canvas
+        my_canvas.create_window((0, 0), window=frame, anchor="nw")
+
+        ##### header #####
+        self.head1 = tk.Label(frame, text="name").grid(row=0, column=0)
+        self.head2 = tk.Label(frame, text="url_co2").grid(row=0, column=1)
+        self.head3 = tk.Label(frame, text="url_ani").grid(row=0, column=2)
+        self.head4 = tk.Label(frame, text="url_features").grid(row=0, column=3)
+        self.head5 = tk.Label(frame, text="env_score").grid(row=0, column=4)
+
+        ##################
+
+        for i, barcode in enumerate(items):
+            # self.show_text_product("Barcode: " + str(barcode) + " & score: " + str(score))
+
+            # Column 1
+            self.tab1 = tk.Label(frame, text=barcode["name"])
+            self.tab1.grid(row=i+1, column=0)
+            # column 2
+            imgtab1 = self.loadimgurl_svg(barcode["url_co2"])
+            self.tab2 = tk.Label(frame, width=180, height=180, image=imgtab1)
+            self.tab2.image = imgtab1 # save reference
+            self.tab2.grid(row=i+1, column=1)
+            # Column 3
+            if barcode["url_ani"] == None:
+                self.tab3 = tk.Label(frame, text="N/A")
+            else:
+                imgtab2 = self.loadimgurl_svg(barcode["url_ani"])
+                self.tab3 = tk.Label(frame, width=180, height=180, image=imgtab2)
+                self.tab3.image = imgtab2 # save reference
+            self.tab3.grid(row=i+1, column=2)
+            # Column 4
+            if len(barcode["url_features"]) == 0:
+                self.tab4 = tk.Label(frame, text="N/A")
+            else:
+                imgtab3 = self.loadimgurl(barcode["url_features"][0])
+                self.tab4 = tk.Label(frame, width=180, height=180, image=imgtab3)
+                self.tab4.image = imgtab3 # save reference
+            self.tab4.grid(row=i+1, column=3)
+            # Column 5
+            self.tab5 = tk.Label(frame, text=barcode["env_score"])
+            self.tab5.grid(row=i+1, column=4)
+
     def calc_score(self):
-        from pprint import pprint
         headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
         chaper_url = "https://tools.learningcontainer.com/sample-json-file.json"
         req = urllib.request.Request(url=chaper_url, headers=headers)
         data = urllib.request.urlopen(req).read()
         data = json.loads(data.decode())
         print(data)
-
-        self.show_text_score(str(data))
-
-        # self.garden = Window(self.master)
-        # self.call_garden()
-
+        print(self.barcodes)
+        items, score = check_item.check_json(str(self.barcodes[0]), data_file)
+        # print score to text box
+        self.show_text_product("My Score: " + str(score))
         self.change_product_img("assets/cows.jpg")
+        self.insert_table(items)
+        
 
     ##########
     # Garden #
@@ -358,24 +477,25 @@ class Mygarden:
         """
         self.box_product.delete(1.0, tk.END)
 
-    def show_text_score(self, text):
-        """Insert text to result box
-        """
-        self.box_score.insert(tk.INSERT, text + "\n")
-        self.box_score.see(tk.END)
+    # def show_text_score(self, text):
+    #     """Insert text to result box
+    #     """
+    #     self.box_score.insert(tk.INSERT, text + "\n")
+    #     self.box_score.see(tk.END)
 
-    def clear_box_score(self):
-        """Clear box
-        """
-        self.box_score.delete(1.0, tk.END)
+    # def clear_box_score(self):
+    #     """Clear box
+    #     """
+    #     self.box_score.delete(1.0, tk.END)
 
     ####################################################
 
     def welcome_msg(self):
         """Show welcome message in result box:
         """
-        self.show_text_product(f"Welcome to MyGarden version 0.1\n")
-        self.show_text_product(f"Developed in HackZurich 2021\n")
+        self.show_text_product(f"Welcome to MyGarden version 0.1")
+        self.show_text_product(f"Developed in HackZurich 2021")
+        self.show_text_product(f"For the benefit of mankind")
 
     def start_app(self):
         """Start application

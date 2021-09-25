@@ -9,7 +9,7 @@ import os
 import tkinter as tk
 import tkinter.scrolledtext as tkscrolled
 
-# from tkinter import PhotoImage, filedialog
+from tkinter import PhotoImage, filedialog
 from tkinter import messagebox
 from tkinter import ttk
 from tkinter.messagebox import showinfo
@@ -17,7 +17,7 @@ from tkinter.messagebox import showinfo
 from datetime import datetime
 import webbrowser
 
-# from PIL import ImageTk, Image
+from PIL import ImageTk, Image
 
 ## For barcode scanner
 import cv2
@@ -73,7 +73,7 @@ class Mygarden:
         """Start application with UI settings
         """
         self.master.title("MyGarden v.0.1")
-        font = "Arial 10"
+        font = "Helvetica 15"
         self.master.option_add("*Font", font)
         # center_width = (self.master.winfo_screenwidth() / 2.0) - (550 / 2.0)
         # center_height = (self.master.winfo_screenheight() / 2.0) - (750 / 2.0)
@@ -110,23 +110,23 @@ class Mygarden:
         # Frame 1 #
         ###########
 
-        frame1 = tk.LabelFrame(self.master, text="")
-        frame1.grid(padx=5, pady=5, ipadx=2, ipady=2, sticky=tk.N, row=0, column=0)
+        self.frame1 = tk.LabelFrame(self.master, text=f"CO2 saved: {self.total_co2} kg")
+        self.frame1.grid(padx=5, pady=5, ipadx=2, ipady=2, sticky=tk.N, row=0, column=0)
 
         #---------
-        self.btn1 = ttk.Button(frame1, text="Scan", command=self.scanner)
+        self.btn1 = ttk.Button(self.frame1, text="Scan", command=self.scanner)
         self.btn1.config(width=14)
         self.btn1.grid(padx="10", pady="5", row=0, column=0)
         #---------
-        self.btn2 = ttk.Button(frame1, text="Print codes", command=self.print_codes)
+        self.btn2 = ttk.Button(self.frame1, text="Print codes", command=self.print_codes)
         self.btn2.config(width=14)
         self.btn2.grid(padx="10", pady="5", row=1, column=0)
         #---------
-        self.btn3 = ttk.Button(frame1, text="Calculate score", command=self.calc_score)
+        self.btn3 = ttk.Button(self.frame1, text="Calculate score", command=self.calc_score)
         self.btn3.config(width=14)
         self.btn3.grid(padx="10", pady="5", row=0, column=1)
         #---------
-        self.btn4 = ttk.Button(frame1, text="Inventory", command=self.test_command)
+        self.btn4 = ttk.Button(self.frame1, text="Inventory", command=self.test_command)
         self.btn4.config(width=14)
         self.btn4.grid(padx="10", pady="5", row=1, column=1)
 
@@ -135,7 +135,7 @@ class Mygarden:
         ###########
 
         frame2 = tk.LabelFrame(self.master, text="Progress")
-        frame2.grid(padx=5, pady=10, row=1, column=0, columnspan=3)
+        frame2.grid(padx=5, pady=10, row=2, column=0, sticky=tk.N)
 
         self.box_product = tkscrolled.ScrolledText(frame2)
         self.box_product.configure(height="10", width="30", wrap="word", undo="True")
@@ -150,7 +150,7 @@ class Mygarden:
         ###########
 
         frame3 = tk.Frame(self.master)
-        frame3.grid(column=0, columnspan=3)
+        frame3.grid(column=0, columnspan=3, sticky=tk.N)
 
         # self.canvas_1 = tk.Canvas(frame3, width=100, height=100)
         # self.loadedimage_1 = self.loadrelimages('assets/apple.jpg')

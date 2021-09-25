@@ -31,6 +31,7 @@ ITEMS = {
         "growingfactor": None,
         "co2consumption":None,
         "drop": None,
+        "dropsat": None,
         "lifetime": None,
         "growsto": "oaktree",
         "growsat": 6,
@@ -49,6 +50,8 @@ ITEMS = {
         "drop": None,
         "rare": True,
         "lifetime": None,
+        "drops": None,
+        "dropsat": None,
         "growsto": "appletree",
         "growsat": 5,
         "compostable": True,
@@ -63,13 +66,14 @@ ITEMS = {
         "growingfactor": 1.,
         "co2consumption": 20.,
         "drop": "apple",
+        "dropsat": 1,
         "lifetime": None,
         "growsto": None,
         "growsat": None,
         "rare": None,
         "compostable": True,
         "consumable": False,
-        "redeemable": False,
+        "redeemable": True,
         "waterable": True,
         "fertilizable": True,
         "plantable": False
@@ -78,9 +82,10 @@ ITEMS = {
         "name": "beehive",
         "growingfactor": 0.,
         "co2consumption": 0.,
-        "growsto": "oaktree",
-        "growsat": 6,
+        "growsto": None,
+        "growsat": None,
         "drop": None,
+        "dropsat": None,
         "lifetime": 5,
         "rare": False,
         "compostable": False,
@@ -129,6 +134,7 @@ ITEMS = {
         "growsto": "oaktree",
         "growsat": 6,
         "drop": None,
+        "dropsat": None,
         "lifetime": None,
         "rare": False,
         "compostable": False,
@@ -146,6 +152,7 @@ ITEMS = {
         "lifetime": None,
         "rare": None,
         "growsto": "oaktree",
+        "dropsat": None,
         "growsat": 6,
         "consumable": False,
         "compostable": True,
@@ -217,6 +224,7 @@ class Item:
         self.growingfactor = ITEMS[itemid]["growingfactor"]  # how fast the item grows
         self.co2consumption = ITEMS[itemid]["co2consumption"]  # how much CO2 the item consumes
         self.drop = ITEMS[itemid]["drop"]  # whether the item has a drop to collect
+        self.dropsat = ITEMS[itemid]["dropsat"]  # whether the item has a drop to collect
         self.lifetime = ITEMS[itemid]["lifetime"]  # how long the item stays. negative values mean indefinite
         self.picture = loadrelimages(f"assets/{itemid}.jpg")  # the picture of the item
         self.rare = ITEMS[itemid]["rare"]  # whether the item is a rare drop for sustainable shopping
@@ -234,7 +242,10 @@ class Item:
             self.garden.removeitem(self.itemid)
         if self.growth == self.growsat:
             self.garden.removeitem(self.itemid)
-            self.garden.additem(self.growsto)
+            if self.growsto:
+                self.garden.additem(self.growsto)
+        if self.growth == self.dropsat:
+            self.garden.additem(self.drop)
         return self.co2consumption
 
     def addtowidget(self, root):

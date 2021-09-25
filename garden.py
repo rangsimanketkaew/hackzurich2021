@@ -5,19 +5,27 @@ import tkinter as tk
 from item import Item
 
 class Garden:
-    def __init__(self):
+    def __init__(self, root):
         self.itemlist = []
         self.bufflist = []
+        self.root = None
+        self.widgets = []
+        self.frame = tk.LabelFrame(root, text="MiGarden")
+        self.frame.grid(padx=5, pady=10, row=2, column=0, sticky=tk.N)
+        self.createwidget()
 
-    def createwidget(self, root):
-        self.root = root
-        tk.Button(root, text="kik")
-        n = len(self.itemlist)
+    def createwidget(self):
+        # if not self.itemlist:
+        if self.frame:
+            self.frame.destroy()
+        self.frame = tk.LabelFrame(self.root, text="MiGarden")
+        self.frame.grid(padx=5, pady=10, row=2, column=0, sticky=tk.N)
         if not self.itemlist:
-            tk.Frame(self.root, width=200, height=200, bg="brown").grid(column=0, row=0)
+            self.frame = tk.Frame(self.frame, width=200, height=200, bg="brown").grid(column=0, row=0)
         else:
+            self.widgets = []
             for i, x in enumerate(self.itemlist):
-                x.addtowidget(self.root).grid(column=i%5, row=i//5)
+                self.widgets += [x.addtowidget(self.frame).grid(column=i%5, row=i//5)]
 
     def addbuff(self, itemid):
         self.bufflist += [itemid]
@@ -32,17 +40,20 @@ class Garden:
     def removeitem(self, itemid):
         for i, item in enumerate(self.itemlist):
             if item.itemid == itemid:
-                del self.itemlist[i]
+                self.itemlist.pop(i)
                 break
+        self.redraw()
 
     def redraw(self):
-        self.createwidget(self.root)
+        self.createwidget()
 
     def update(self):
+        print(self.itemlist)
         # advance time
         saved_co2 = 0
         for item in self.itemlist:
             saved_co2 += item.update()
+        print([i.name for i in self.itemlist])
         return saved_co2
 
 if __name__ == "__main__":

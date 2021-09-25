@@ -22,7 +22,7 @@ class Inventory:
     def removeitem(self, itemid):
         for i, item in enumerate(self.itemlist):
             if item.itemid == itemid:
-                del self.itemlist[i]
+                self.itemlist.pop(i)
                 break
 
     def createwidget(self, root):

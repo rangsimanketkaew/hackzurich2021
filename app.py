@@ -31,6 +31,7 @@ from json_reader import check_item
 from garden import Garden#, Icon, Toys
 from table_product import Table
 from inventory import Inventory
+from item import Item
 
 ## convert svg to png
 import cairosvg
@@ -49,8 +50,8 @@ class Window(tk.Toplevel):
                 text='Close',
                 command=self.destroy).pack(expand=True)
 
-class Mygarden:
-    """Mygarden main app
+class Migarden:
+    """Migarden main app
     """
     def __init__(self):
         self.barcodes = set([])
@@ -103,7 +104,7 @@ class Mygarden:
     def start_master(self):
         """Start application with UI settings
         """
-        self.master.title("MyGarden v.0.1")
+        self.master.title("MiGarden v.0.1")
         font = "Helvetica 15"
         self.master.option_add("*Font", font)
         # center_width = (self.master.winfo_screenwidth() / 2.0) - (550 / 2.0)
@@ -151,7 +152,7 @@ class Mygarden:
         self.btn1.grid(padx="10", pady="5", row=1, column=0)
         #---------
         self.btn2 = ttk.Button(self.frame1, text="Calculate score", 
-                                command=lambda: [self.calc_score(), self.print_codes()])
+                               command=lambda: [self.calc_score(), self.print_codes()])
         self.btn2.config(width=14)
         self.btn2.grid(padx="10", pady="5", row=2, column=0)
         #---------
@@ -166,26 +167,23 @@ class Mygarden:
         ################
         # garden frame #
         ################
-        self.garden = Garden()
-        self.frame = tk.LabelFrame(self.master, text="MyGarden")
-        self.frame.grid(padx=5, pady=10, row=2, column=0, sticky=tk.N)
-        self.garden.createwidget(self.frame)
+        self.garden = Garden(self.master)
 
         #############
         # inventory #
         #############
         self.inventory = Inventory(self.garden)
-        self.inventory.additem("debug")
-        self.inventory.additem("apple")
-        self.inventory.additem("applesapling")
-        self.inventory.additem("appletree")
-        self.inventory.additem("beehive")
-        self.inventory.additem("chickens")
-        self.inventory.additem("cows")
-        self.inventory.additem("fertilizer")
-        self.inventory.additem("oaksapling")
-        self.inventory.additem("oaktree")
-        self.inventory.additem("pigs")
+        # self.inventory.additem("debug")
+        # self.inventory.additem("apple")
+        # self.inventory.additem("applesapling")
+        # self.inventory.additem("appletree")
+        # self.inventory.additem("beehive")
+        # self.inventory.additem("chickens")
+        # self.inventory.additem("cows")
+        # self.inventory.additem("fertilizer")
+        # self.inventory.additem("oaksapling")
+        # self.inventory.additem("oaktree")
+        # self.inventory.additem("pigs")
 
         ###########
         # Frame 2 #
@@ -334,15 +332,15 @@ class Mygarden:
 
     def insert_table(self, items):
         master_table = tk.Toplevel()
-        master_table.geometry('800x500')
-        master_table.title('Toplevel Window')
+        master_table.geometry('900x800')
+        master_table.title('Your rewards!')
         master_frame = Frame(master_table)
         master_frame.pack(fill=tk.BOTH,expand=1)
 
         sec = Frame(master_frame)
         sec.pack(fill=tk.X, side=tk.BOTTOM)
         # Create A Canvas
-        my_canvas = tk.Canvas(master_table, width=750, height=700)
+        my_canvas = tk.Canvas(master_table, width=900, height=800)
         my_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
         # Add A Scrollbars to Canvas
         x_scrollbar = ttk.Scrollbar(sec, orient=tk.HORIZONTAL, command=my_canvas.xview)
@@ -399,6 +397,15 @@ class Mygarden:
             # Column 5
             self.tab5 = tk.Label(frame, text=barcode["env_score"])
             self.tab5.grid(row=i+1, column=4)
+
+        self.rewardstext = tk.Label(frame, text="Congratulations! You won:").grid(row=len(items)+1, column=0)
+        self.rewardsitems = Item("applesapling").addtowidget(frame).grid(row=len(items)+1, column=1)
+        self.rewardsitems = Item("beehive").addtowidget(frame).grid(row=len(items)+1, column=1)
+        self.inventory.additem("beehive")
+        self.rewardsitems = Item("applesapling").addtowidget(frame).grid(row=len(items)+1, column=2)
+        self.inventory.additem("applesapling")
+        self.rewardsitems = Item("oaksapling").addtowidget(frame).grid(row=len(items)+1, column=3)
+        self.inventory.additem("oaksapling")
 
     def calc_score(self):
         # Remove None
@@ -470,7 +477,7 @@ class Mygarden:
     def welcome_msg(self):
         """Show welcome message in result box:
         """
-        self.show_text_product(f"Welcome to MyGarden version 0.1")
+        self.show_text_product(f"Welcome to MiGarden version 0.1")
         self.show_text_product(f"Developed in HackZurich 2021")
         self.show_text_product(f"For the benefit of mankind")
         self.show_text_product(f"===============================\n")
@@ -482,7 +489,7 @@ class Mygarden:
         
 
 def main():
-    app = Mygarden()
+    app = Migarden()
     app.start_app()
 
 if __name__ == "__main__":

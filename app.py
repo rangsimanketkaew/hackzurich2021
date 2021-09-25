@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import sys
+
+from PIL import Image
 sys.setrecursionlimit(1500)
 
 import os
@@ -25,6 +27,19 @@ from pyzbar.pyzbar import decode
 ## JSON API
 import urllib.request, json 
 
+from garden import Garden, Icon, Toys
+
+
+class Window(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.geometry('300x100')
+        self.title('Toplevel Window')
+
+        ttk.Button(self,
+                text='Close',
+                command=self.destroy).pack(expand=True)
 
 class Mygarden:
     """Mygarden main app
@@ -98,21 +113,22 @@ class Mygarden:
         frame1 = tk.LabelFrame(self.master, text="")
         frame1.grid(padx=5, pady=5, ipadx=2, ipady=2, sticky=tk.N, row=0, column=0)
 
-        self.btn1 = ttk.Button(frame1, text="Inventory", command=self.test_command)
+        #---------
+        self.btn1 = ttk.Button(frame1, text="Scan", command=self.scanner)
         self.btn1.config(width=14)
         self.btn1.grid(padx="10", pady="5", row=0, column=0)
         #---------
-        self.btn2 = ttk.Button(frame1, text="Scan", command=self.scanner)
+        self.btn2 = ttk.Button(frame1, text="Print codes", command=self.print_codes)
         self.btn2.config(width=14)
-        self.btn2.grid(padx="10", pady="5", row=0, column=1)
-        #---------
-        self.btn3 = ttk.Button(frame1, text="Print codes", command=self.print_codes)
-        self.btn3.config(width=14)
-        self.btn3.grid(padx="10", pady="5", row=0, column=2)
+        self.btn2.grid(padx="10", pady="5", row=1, column=0)
         #---------
         self.btn3 = ttk.Button(frame1, text="Calculate score", command=self.calc_score)
         self.btn3.config(width=14)
-        self.btn3.grid(padx="10", pady="5", row=0, column=3)
+        self.btn3.grid(padx="10", pady="5", row=0, column=1)
+        #---------
+        self.btn4 = ttk.Button(frame1, text="Inventory", command=self.test_command)
+        self.btn4.config(width=14)
+        self.btn4.grid(padx="10", pady="5", row=1, column=1)
 
         ###########
         # Frame 2 #
@@ -122,11 +138,11 @@ class Mygarden:
         frame2.grid(padx=5, pady=10, row=1, column=0, columnspan=3)
 
         self.box_product = tkscrolled.ScrolledText(frame2)
-        self.box_product.configure(height="10", width="40", wrap="word", undo="True")
+        self.box_product.configure(height="10", width="30", wrap="word", undo="True")
         self.box_product.grid(row=0, column=0)
 
         self.box_score = tkscrolled.ScrolledText(frame2)
-        self.box_score.configure(height="10", width="40", wrap="word", undo="True")
+        self.box_score.configure(height="10", width="30", wrap="word", undo="True")
         self.box_score.grid(row=0, column=1)
 
         ###########
@@ -136,30 +152,34 @@ class Mygarden:
         frame3 = tk.Frame(self.master)
         frame3.grid(column=0, columnspan=3)
 
-        self.canvas_1 = tk.Canvas(frame3, width=100, height=100)
+        # self.canvas_1 = tk.Canvas(frame3, width=100, height=100)
+        # self.loadedimage_1 = self.loadrelimages('assets/apple.jpg')
+        # self.canvas_1.create_image(50, 50, anchor="center", image=self.loadedimage_1)
+        # self.canvas_1.grid(row=0, column=0)
+
         self.loadedimage_1 = self.loadrelimages('assets/apple.jpg')
-        self.canvas_1.create_image(50, 50, anchor="center", image=self.loadedimage_1)
+        self.canvas_1 = tk.Label(frame3, width=200, height=200, image=self.loadedimage_1)
+        # self.canvas_1.create_image(50, 50, anchor="center", image=self.loadedimage_1)
         self.canvas_1.grid(row=0, column=0)
 
-        self.canvas_2 = tk.Canvas(frame3, width=100, height=100)
-        self.loadedimage_2 = self.loadrelimages('assets/beehive.jpg')
-        self.canvas_2.create_image(50, 50, anchor="center", image=self.loadedimage_2)
+        self.loadedimage_2 = self.loadrelimages('assets/pigs.jpg')
+        self.canvas_2 = tk.Label(frame3, width=200, height=200, image=self.loadedimage_2)
+        # self.canvas_1.create_image(50, 50, anchor="center", image=self.loadedimage_1)
         self.canvas_2.grid(row=0, column=1)
 
-        self.canvas_3 = tk.Canvas(frame3, width=100, height=100)
-        self.loadedimage_3 = self.loadrelimages('assets/chickens.jpg')
-        self.canvas_3.create_image(50, 50, anchor="center", image=self.loadedimage_3)
-        self.canvas_3.grid(row=0, column=2)
+    ################
+    # Update image #
+    ################
 
-        self.canvas_4 = tk.Canvas(frame3, width=100, height=100)
-        self.loadedimage_4 = self.loadrelimages('assets/cows.jpg')
-        self.canvas_4.create_image(50, 50, anchor="center", image=self.loadedimage_4)
-        self.canvas_4.grid(row=0, column=3)
+    def change_product_img(self, new_img):
+        loadedimage = self.loadrelimages(new_img)
+        self.canvas_1.configure(image=loadedimage)
+        self.canvas_1.image = loadedimage
 
-        self.canvas_5 = tk.Canvas(frame3, width=100, height=100)
-        self.loadedimage_5 = self.loadrelimages('assets/pigs.jpg')
-        self.canvas_5.create_image(50, 50, anchor="center", image=self.loadedimage_5)
-        self.canvas_5.grid(row=0, column=4)
+    def change_tree_img(self, new_img):
+        loadedimage = self.loadrelimages(new_img)
+        self.canvas_2.configure(image=loadedimage)
+        self.canvas_2.image = loadedimage
 
     ###################
     # Barcode scanner #
@@ -222,9 +242,10 @@ class Mygarden:
         for barcode in self.barcodes:
             self.show_text_product("===> " + str(barcode))
 
-    ###################
-    # Calculate score #
-    ###################
+    ##########################
+    # Calculate score        #
+    # and call Garden window #
+    ##########################
 
     def calc_score(self):
         from pprint import pprint
@@ -236,6 +257,39 @@ class Mygarden:
         print(data)
 
         self.show_text_score(str(data))
+
+        # self.garden = Window(self.master)
+        # self.call_garden()
+
+        self.change_product_img("assets/cows.jpg")
+
+    ##########
+    # Garden #
+    ##########
+
+    def call_garden(self):
+        # self.garden = Garden(self.master)
+        # root = tk.Toplevel()
+        root = tk.Tk()
+        # root = self.master
+
+        # root.geometry("+1+1")
+        # tk.Button(command=root.quit, text="Quit").pack()
+        t1 = Garden(root)
+        t1.top.geometry("+1+60")
+        #-----
+        t2 = Garden(root)
+        t2.top.geometry("+120+60")
+        #-----
+        i1 = Icon("ICON1")
+        i4 = Icon("ICON4")
+        g1 = Toys()
+        i2 = Icon("ICON2")
+        i1.attach(t1.canvas, x=10, y=10)
+        i4.attach(t1.canvas, x=30, y=30)
+        g1.attach(t1.canvas)
+        i2.attach(t2.canvas)
+        root.mainloop()
 
     ##########################
     # Text printer (frame 3) #

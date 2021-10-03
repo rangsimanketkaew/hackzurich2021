@@ -2,7 +2,7 @@
 Holds the player's in use items
 """
 import tkinter as tk
-from item import Item
+from .item import Item
 
 class Garden:
     def __init__(self, root):

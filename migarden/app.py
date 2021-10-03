@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# v. 0.1 - HackZurich 2021
+
 import sys
 
 sys.setrecursionlimit(1500)
@@ -8,12 +10,8 @@ import os
 import io
 import tkinter as tk
 import tkinter.scrolledtext as tkscrolled
-
-from tkinter import Frame
 from tkinter import ttk
-from tkinter.messagebox import showinfo
 
-from datetime import datetime
 import webbrowser
 
 from PIL import ImageTk, Image
@@ -27,11 +25,11 @@ from pyzbar.pyzbar import decode
 import urllib.request, json 
 from json_reader import check_item
 
-## Import garden geenerator
-from garden import Garden#, Icon, Toys
-from table_product import Table
-from inventory import Inventory
-from item import Item
+## Import garden generator
+from .garden import Garden
+from .table_product import Table
+from .inventory import Inventory
+from .item import Item
 
 ## convert svg to png
 import cairosvg
@@ -194,69 +192,6 @@ class Migarden:
         self.box_product = tkscrolled.ScrolledText(frame2)
         self.box_product.configure(height="15", width="42", wrap="word", undo="True")
         self.box_product.grid(row=0, column=0, columnspan=2)
-        
-        # # Create Treeview
-        # <<<<<<< Not be able to show multiple images per row >>>>>>>>
-        # self.tree = ttk.Treeview(frame2, column=('A', 'B'), selectmode='none', height=7)
-        # self.tree.grid(row=0, column=1, sticky='nsew')
-
-        # # Setup column heading
-        # # #0, #1, #2 denotes the 0, 1st, 2nd columns
-        # self.tree.heading('#0', text=' Image', anchor='center')
-        # self.tree.heading('#1', text=' A', anchor='center')
-        # self.tree.heading('#2', text=' B', anchor='center')
-        
-        # # Setup column
-        # self.tree.column('A', anchor='center', width=100)
-        # self.tree.column('B', anchor='center', width=100)
-
-        ###########
-        # Frame 3 #
-        ###########
-        # frame3 = tk.Frame(self.master)
-        # frame3.grid(column=0, columnspan=3, sticky=tk.N)
-
-        # self.loadedimage_1 = self.loadrelimages('assets/apple.jpg')
-        # self.canvas_1 = tk.Label(frame3, width=200, height=200, image=self.loadedimage_1)
-        # # self.canvas_1.create_image(50, 50, anchor="center", image=self.loadedimage_1)
-        # self.canvas_1.grid(row=0, column=0)
-
-        # self.loadedimage_2 = self.loadrelimages('assets/pigs.jpg')
-        # self.canvas_2 = tk.Label(frame3, width=200, height=200, image=self.loadedimage_2)
-        # # self.canvas_1.create_image(50, 50, anchor="center", image=self.loadedimage_1)
-        # self.canvas_2.grid(row=0, column=1)
-
-    ################
-    # Update image #
-    ################
-
-    # def change_product_img(self, new_img):
-    #     loadedimage = self.loadrelimages(new_img)
-    #     self.canvas_1.configure(image=loadedimage)
-    #     self.canvas_1.image = loadedimage
-
-    # def change_tree_img(self, new_img):
-    #     loadedimage = self.loadrelimages(new_img)
-    #     self.canvas_2.configure(image=loadedimage)
-    #     self.canvas_2.image = loadedimage
-
-    ################
-    # Update table #
-    ################
-    
-    # def update_table(self, product_data):
-    #     """Pop up product info in the table
-
-    #     product_data: dict
-    #     """
-    #     for barcode in self.barcodes:
-    #         items, score = check_item.check_json(str(barcode), data_file)
-    #     # Insert image to #0 
-    #     self._img = self.loadrelimages("assets/apple.jpg", size=(100,100))
-    #     self.tree.insert('', 'end', 
-    #                         # text="#0's text", 
-    #                         image=self._img, 
-    #                         value=("A's value", "B's value"))
 
     ###################
     # Barcode scanner #
@@ -427,35 +362,6 @@ class Migarden:
 
         # convert it back to set
         self.barcodes = set(self.barcodes)
-
-    ##########
-    # Garden #
-    ##########
-
-    ## <<< Drag and drop >>>
-    # def call_garden(self):
-    #     # self.garden = Garden(self.master)
-    #     # root = tk.Toplevel()
-    #     root = tk.Tk()
-    #     # root = self.master
-
-    #     # root.geometry("+1+1")
-    #     # tk.Button(command=root.quit, text="Quit").pack()
-    #     t1 = Garden(root)
-    #     t1.top.geometry("+1+60")
-    #     #-----
-    #     t2 = Garden(root)
-    #     t2.top.geometry("+120+60")
-    #     #-----
-    #     i1 = Icon("ICON1")
-    #     i4 = Icon("ICON4")
-    #     g1 = Toys()
-    #     i2 = Icon("ICON2")
-    #     i1.attach(t1.canvas, x=10, y=10)
-    #     i4.attach(t1.canvas, x=30, y=30)
-    #     g1.attach(t1.canvas)
-    #     i2.attach(t2.canvas)
-    #     root.mainloop()
 
     ##########################
     # Text printer (frame 3) #

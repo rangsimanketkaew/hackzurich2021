@@ -3,7 +3,7 @@ Holds the player's unused items
 """
 import tkinter as tk
 
-from item import Item
+from .item import Item
 
 class Inventory:
 

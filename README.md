@@ -20,16 +20,23 @@ Backend: Python, MongoDB <br>
 Frontend: TkInter <br>
 Special libraries: OpenCV, PyInstaller, NumPy <br>
 
-#### Prerequisites
+## Prerequisites
 
 - tkinter
 - opencv (`brew install opencv`)
 - pyzbar (`pip install pyzbar`)
 
-#### Run app
+## Installation
 
-- `python3 app.py`
+```sh
+git clone git@github.com:rangsimanketkaew/hackzurich2021.git
+pip install .
+migarden
+```
 
+## Run the app
+
+`python -m migarden.app`
 
 ## Challenges we ran into
  We had many good ideas for this App, but the limitations on time only allowed us to finish the skeleton.

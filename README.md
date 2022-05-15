@@ -1,9 +1,5 @@
 # MiGarden
 
-## Who are we?
-
-![](./assets/hackzurich_team.png)
-
 ## Inspiration
 Most people got used to buying products with a high cost-efficiency. However, high cost-efficiency for human-beings does not necessarily mean the same for our environment. Although the products in Migros have been assigned a Klima check, Tierwohl check, and other labels, customers easily ignore them during the shopping.
 To remind people of our environment while shopping, we have designed an interactive game, named MiGarden, in which people can collect Environment points (EP) by shopping for environment-friendly products. The environment points can be used in the app to grow a garden and gain rewards for their efforts.
@@ -51,3 +47,9 @@ It was the first time we cooperated on a time-limited challenge. We learned how 
 Implementation of multiplayer and multi-platform.
 Extension of libraries of plants and rewards.
 
+## Who are we
+
+- Eva Vandaele
+- Lukas Schreder
+- Rangsiman Ketkaew
+- Ruocheng Han
